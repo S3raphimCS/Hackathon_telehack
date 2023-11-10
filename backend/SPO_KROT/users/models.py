@@ -18,6 +18,7 @@ class MyUserManager(UserManager):
         return self._create_user(email, password=None, **extra_fields)
 
     def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault('first_name', 'Суперпользователь')
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('avatar', 'images/users/blank.jpg')
@@ -72,8 +73,6 @@ class CustomUser(AbstractUser):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
-    # TODO Надо подумать
-    # REQUIRED_FIELDS = ["first_name", 'last_name', 'middle_name', 'department', 'employee_code', 'date_of_birth']
 
     def __str__(self):
         return self.get_full_name()
