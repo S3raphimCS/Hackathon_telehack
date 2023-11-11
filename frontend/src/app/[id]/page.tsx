@@ -13,6 +13,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+import Button from "@mui/material/Button";
 
 interface Measurement {
   id: number;
@@ -219,7 +220,11 @@ export default function ReportPage() {
             <TextField
               size="small"
               defaultValue={fields[i][prop as keyof MeasurementKeys]}
-              error={!!errors.measurements?.[i]?.[prop as keyof typeof errors.measurements[0]]}
+              error={
+                !!errors.measurements?.[i]?.[
+                  prop as keyof (typeof errors.measurements)[0]
+                ]
+              }
               {...register(
                 `measurements.${i}.${prop as keyof MeasurementKeys}`,
                 { valueAsNumber: true }
@@ -252,13 +257,15 @@ export default function ReportPage() {
           sx={{ m: 1, width: "400px" }}
           {...register("place")}
         />
+        <Button type="submit" variant="contained">
+          Сохранить
+        </Button>
         <br />
         <Typography sx={{ m: 1, color: "gray" }} variant="body1">
           Период проведения контроля
         </Typography>
         <TextField label="C" sx={{ m: 1 }} {...register("from")} />
         <TextField label="По" sx={{ m: 1 }} {...register("to")} />
-        <input type="submit" />
         <TableContainer component={Paper} sx={{ m: 1 }}>
           <Table>
             <TableHead>
