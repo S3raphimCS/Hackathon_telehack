@@ -28,7 +28,7 @@ schema_view = get_schema_view(
     openapi.Info(
         title="СПО КРОТ",
         default_version='v1',
-        description="API сервиса СПО КРОТ",
+        description="API сервиса СПО РКОТ",
     ),
     public=True,
     permission_classes=[permissions.IsAdminUser],
@@ -38,6 +38,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/swagger/', schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
     path('api/v1/users/', include('users.urls'), name='users'),
+    path('api/v1/metrics/', include('metrics.urls'), name='metrics'),
     path('api/v1/auth/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/v1/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]

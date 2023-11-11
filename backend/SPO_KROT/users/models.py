@@ -27,10 +27,6 @@ class MyUserManager(UserManager):
         return self._create_user(email, password, **extra_fields)
 
 
-# Может сделать иерархию админов?
-# Чтобы кто-то мог выдавать права доступа к этой системе
-# Нужны ли отделы и коды сотрудника?
-# Можно сделать по никнейму, который будет генерироваться хешированием почты и показываться при createsuperuser
 class CustomUser(AbstractUser):
     class Meta:
         verbose_name = "Пользователь"

@@ -36,6 +36,11 @@ class Report(models.Model):
     )
     region = models.CharField(
         _("Регион"),
+        max_length=50,
+        blank=True, null=True,
+    )
+    city = models.CharField(
+        _("Город"),
         max_length=100,
         blank=True, null=True
     )
@@ -57,7 +62,7 @@ class Report(models.Model):
     )
 
     def __str__(self):
-        return f"{self.start_date}-{self.end_date} {self.title}"
+        return f"с {self.start_date} по {self.end_date} Отчет: {self.title}"
 
 
 class Measurements(models.Model):
