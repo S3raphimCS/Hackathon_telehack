@@ -21,6 +21,10 @@ class UserAdmin(admin.ModelAdmin):
     ordering = ('email',)
 
     def save_model(self, request, obj, form, change):
-        if not obj.pk: 
+        if not obj.pk:
             obj.set_password(obj.password)
+        else:
+            current_password = CustomUser.objects.get(pk=obj.pk).password
+            if obj.password != current_password:
+                obj.set_password(obj.password)
         obj.save()
