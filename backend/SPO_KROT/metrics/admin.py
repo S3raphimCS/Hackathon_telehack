@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Measurements, Operator, Report, ExcelFile
+from .models import ExcelFile, Measurements, Operator, Report
 
 
 @admin.register(Operator)

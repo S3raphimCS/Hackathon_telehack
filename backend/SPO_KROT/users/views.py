@@ -6,8 +6,9 @@ from django.utils.translation import gettext_lazy as _
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, throttle_classes
 from rest_framework.response import Response
+from rest_framework.throttling import UserRateThrottle
 
 
 @api_view(["GET"])
@@ -50,6 +51,7 @@ def create_random_password(pass_len):
         }
     )
 )
+@throttle_classes([UserRateThrottle])
 @api_view(["POST"])
 def signup_user(request):
     """Создает пользователя и генерирует ему уникальный пароль"""

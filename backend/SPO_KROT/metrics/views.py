@@ -1,20 +1,21 @@
 from re import split as resplit
 
 from datefinder import find_dates
-from django.shortcuts import render
+from django.utils.translation import gettext_lazy as _
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from openpyxl import load_workbook
-from django.utils.translation import gettext_lazy as _
-from rest_framework import status, generics, viewsets
-from rest_framework.generics import CreateAPIView
-from rest_framework.views import APIView
-from rest_framework.decorators import api_view, action
+from rest_framework import generics, status
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import ExcelFile
+from rest_framework.throttling import UserRateThrottle
+from rest_framework.views import APIView
 
-from .models import Measurements, Operator, Report
-from .serializers import ReportListSerializer, ReportDetailSerializer, ExcelUploadSerializer
+from users.models import CustomUser
+
+from .models import ExcelFile, Measurements, Operator, Report
+from .serializers import (ExcelUploadSerializer, ReportDetailSerializer,
+                          ReportListSerializer)
 
 update_metrics_example = [
     {
@@ -70,12 +71,6 @@ class ReportListView(generics.ListAPIView):
     queryset = Report.objects.all()
     serializer_class = ReportListSerializer
 
-
-class ReportDownload(APIView):
-    def post(self, request, *args, **kwargs):
-        pass
-
-
 # Подумать если будут кидать одинаковый отчет с разными названиями
 # @swagger_auto_schema(
 #     # method='POST',
@@ -89,7 +84,8 @@ class ReportDownload(APIView):
 #     )
 # )
 # @api_view(["POST"])
-def create_report(filename, user):  # request
+def create_report(filename: str, user: CustomUser) -> Response:  # request
+    """Функция для создания модели отчета и метрик в БД."""
     # filename = request.data["filename"]
     parse_result = parse_excel(filename)
     if parse_result:
@@ -117,7 +113,8 @@ def create_report(filename, user):  # request
         return Response({"error": "Ошибка при работе с файлом"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-def parse_excel(filename):
+def parse_excel(filename: str) -> dict | FileNotFoundError | None:
+    """Функция для парсинга отчета Excel."""
     try:
         wb = load_workbook(filename)
         sheet = wb.active
@@ -160,6 +157,8 @@ def parse_excel(filename):
 
 
 class ExcelUploadView(APIView):
+    """View загружает на сервер отчет Excel, выгружает в БД и удаляет с сервера."""
+    throttle_classes = [UserRateThrottle]
     def post(self, request):
         serializer = ExcelUploadSerializer(data=request.data)
         if serializer.is_valid():
@@ -258,3 +257,10 @@ def update_report_metrics(request, pk):
             number_of_connections_attempts_http=number_of_connections_attempts_http,
             number_of_test_sessions_http=number_of_test_sessions_http, )
     return Response({"data": "Данные успешно изменены"}, status=status.HTTP_200_OK)
+
+
+@api_view(["GET"])
+def my_reports(request):
+    """Возвращает список отчетов, созданных пользователем."""
+    reports = Report.objects.filter(publisher=request.user)
+    return Response({"reports": reports}, status=status.HTTP_200_OK)

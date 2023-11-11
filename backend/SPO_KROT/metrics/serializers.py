@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Report, ExcelFile
+from .models import ExcelFile, Report
 
 
 class ReportListSerializer(serializers.ModelSerializer):
