@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  django: 
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: django_web
+    command: sh -c "python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./backend/SPO_KROT:/api 
+    ports: 
+      - '8000:8000'
+    env_file: 
+      - .env  
+    depends_on:
+      - pgdb
+    networks:  
+      - backend_net
+
+  pgdb:
+    image: postgres
+    container_name: pgdb
+    restart: always
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports: 
+      - '5432:5432'
+    env_file: 
+      - .env
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 6s
+      retries: 3
+    networks:  
+      - backend_net
+  
+  # react-app:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   container_name: react_app
+  #   volumes:
+  #     - ./frontend:/frontend
+  #   ports:
+  #   - "3000:3000"
+  #   networks:
+  #     - backend_net
+  
+
+volumes:
+  pgdata:
+
+networks:
+  backend_net:
+    driver: bridge
+  
