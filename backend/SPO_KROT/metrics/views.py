@@ -14,6 +14,47 @@ from rest_framework.response import Response
 from .models import Measurements, Operator, Report
 from .serializers import ReportListSerializer, ReportDetailSerializer
 
+update_metrics_example = [
+    {
+        "id": 13,
+        "voice_service_non_accessibility": "0.3",
+        "voice_service_cut_off": "0.8",
+        "speech_quality_on_call": "4.2",
+        "negative_mos_samples_ratio": "0.3",
+        "undelivered_messages": "2.4",
+        "avg_sms_delivery_time": "6.3",
+        "http_failure_session": "2.2",
+        "http_ul_mean_userdata_rate": "2488.1",
+        "http_dl_mean_userdata_rate": "9700.9",
+        "http_session_time": "10.9",
+        "number_of_test_voice_connections": 7818,
+        "number_of_voice_sequences": 147909,
+        "voice_connections_with_low_intelligibility": 374,
+        "number_of_sms_messages": 500,
+        "number_of_connections_attempts_http": 1729,
+        "number_of_test_sessions_http": 2204
+    },
+    {
+        "id": 13,
+        "voice_service_non_accessibility": "0.1",
+        "voice_service_cut_off": "0.5",
+        "speech_quality_on_call": "4.5",
+        "negative_mos_samples_ratio": "0.1",
+        "undelivered_messages": "2.8",
+        "avg_sms_delivery_time": "6.6",
+        "http_failure_session": "2.6",
+        "http_ul_mean_userdata_rate": "2488.9",
+        "http_dl_mean_userdata_rate": "9700.2",
+        "http_session_time": "10.3",
+        "number_of_test_voice_connections": 7818,
+        "number_of_voice_sequences": 147909,
+        "voice_connections_with_low_intelligibility": 374,
+        "number_of_sms_messages": 500,
+        "number_of_connections_attempts_http": 1729,
+        "number_of_test_sessions_http": 2204
+    }
+]
+
 
 class ReportDetailView(generics.RetrieveAPIView):
     """Возвращает информацию о конретном отчет по ID."""
@@ -125,29 +166,34 @@ def download(request, excel):
 
 
 @swagger_auto_schema(
-    method='POST',
+    method='PUT',
     operation_description=_("Изменяет все метрики одного отчета"),
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
-        required=['filename', 'sheetname'],
+        required=("__all__",),
         properties={
+            'publisher': openapi.Schema(type=openapi.TYPE_STRING, example="Суперпользователь"),
+            'region': openapi.Schema(type=openapi.TYPE_STRING, example="УФО"),
+            'city': openapi.Schema(type=openapi.TYPE_STRING, example="г. Екатеринбург"),
+            'start_date': openapi.Schema(type=openapi.FORMAT_DATE, example="2019-03-06"),
+            'end_date': openapi.Schema(type=openapi.FORMAT_DATE, example="2019-07-23"),
             "measurements_set": openapi.Schema(type=openapi.TYPE_ARRAY,
                                                items=openapi.Schema(type=openapi.TYPE_OBJECT, properties={
                                                    'id': openapi.Schema(type=openapi.TYPE_INTEGER),
                                                    'voice_service_non_accessibility': openapi.Schema(
-                                                       type=openapi.TYPE_STRING),
-                                                   'voice_service_cut_off': openapi.Schema(type=openapi.TYPE_STRING),
-                                                   'speech_quality_on_call': openapi.Schema(type=openapi.TYPE_STRING),
+                                                       type=openapi.FORMAT_DECIMAL),
+                                                   'voice_service_cut_off': openapi.Schema(type=openapi.FORMAT_DECIMAL),
+                                                   'speech_quality_on_call': openapi.Schema(type=openapi.FORMAT_DECIMAL),
                                                    'negative_mos_samples_ratio': openapi.Schema(
-                                                       type=openapi.TYPE_STRING),
-                                                   'undelivered_messages': openapi.Schema(type=openapi.TYPE_STRING),
-                                                   'avg_sms_delivery_time': openapi.Schema(type=openapi.TYPE_STRING),
-                                                   'http_failure_session': openapi.Schema(type=openapi.TYPE_STRING),
+                                                       type=openapi.FORMAT_DECIMAL),
+                                                   'undelivered_messages': openapi.Schema(type=openapi.FORMAT_DECIMAL),
+                                                   'avg_sms_delivery_time': openapi.Schema(type=openapi.FORMAT_DECIMAL),
+                                                   'http_failure_session': openapi.Schema(type=openapi.FORMAT_DECIMAL),
                                                    'http_ul_mean_userdata_rate': openapi.Schema(
-                                                       type=openapi.TYPE_STRING),
+                                                       type=openapi.FORMAT_DECIMAL),
                                                    'http_dl_mean_userdata_rate': openapi.Schema(
-                                                       type=openapi.TYPE_STRING),
-                                                   'http_session_time': openapi.Schema(type=openapi.TYPE_STRING),
+                                                       type=openapi.FORMAT_DECIMAL),
+                                                   'http_session_time': openapi.Schema(type=openapi.FORMAT_DECIMAL),
                                                    'number_of_test_voice_connections': openapi.Schema(
                                                        type=openapi.TYPE_INTEGER),
                                                    'number_of_voice_sequences': openapi.Schema(
@@ -159,62 +205,47 @@ def download(request, excel):
                                                        type=openapi.TYPE_INTEGER),
                                                    'number_of_test_sessions_http': openapi.Schema(
                                                        type=openapi.TYPE_INTEGER),
-                                               }, example=[
-                                                   {
-                                                       "id": 13,
-                                                       "voice_service_non_accessibility": "0.294192888206702",
-                                                       "voice_service_cut_off": "0.837628865979381",
-                                                       "speech_quality_on_call": "4.170714857833180",
-                                                       "negative_mos_samples_ratio": "0.252858176311110",
-                                                       "undelivered_messages": "2.400000000000000",
-                                                       "avg_sms_delivery_time": "6.276091028432380",
-                                                       "http_failure_session": "2.161200101703530",
-                                                       "http_ul_mean_userdata_rate": "2488.145512515050000",
-                                                       "http_dl_mean_userdata_rate": "9700.979612662120000",
-                                                       "http_session_time": "10.925764036688000",
-                                                       "number_of_test_voice_connections": 7818,
-                                                       "number_of_voice_sequences": 147909,
-                                                       "voice_connections_with_low_intelligibility": 374,
-                                                       "number_of_sms_messages": 500,
-                                                       "number_of_connections_attempts_http": 1729,
-                                                       "number_of_test_sessions_http": 2204}])),
+                                               }, example=update_metrics_example)),
         },
     )
 )
-@api_view(["POST"])
-def update_report_metrics(request):
+@api_view(["PUT"])
+def update_report_metrics(request, pk):
     """Изменяет все метрики одного отчета"""
     data = request.data
-    # for metric in data["measurements_set"]:
-    #     metric_id = metric["id"]
-    #     voice_service_non_accessibility = metric["voice_service_non_accessibility"]
-    #     voice_service_cut_off = metric["voice_service_cut_off"]
-    #     speech_quality_on_call = metric["speech_quality_on_call"]
-    #     negative_mos_samples_ratio = metric["negative_mos_samples_ratio"]
-    #     undelivered_messages = metric["undelivered_messages"]
-    #     avg_sms_delivery_time = metric["avg_sms_delivery_time"]
-    #     http_failure_session = metric["http_failure_session"]
-    #     http_ul_mean_userdata_rate = metric["http_ul_mean_userdata_rate"]
-    #     http_dl_mean_userdata_rate = metric["http_dl_mean_userdata_rate"]
-    #     http_session_time = metric["http_session_time"]
-    #     number_of_test_voice_connections = metric["number_of_test_voice_connections"]
-    #     number_of_voice_sequences = metric["number_of_voice_sequences"]
-    #     voice_connections_with_low_intelligibility = metric["voice_connections_with_low_intelligibility"]
-    #     number_of_sms_messages = metric["number_of_sms_messages"]
-    #     number_of_connections_attempts_http = metric["number_of_connections_attempts_http"]
-    #     number_of_test_sessions_http = metric["number_of_test_sessions_http"]
-    #     # operator_id = metric["operator"]["id"]
-    #     # report_id = metric["report"]["id"]
-    #     Measurements.objects.filter(id=metric_id).update(
-    #         voice_service_non_accessibility=voice_service_non_accessibility,
-    #         voice_service_cut_off=voice_service_cut_off, speech_quality_on_call=speech_quality_on_call,
-    #         negative_mos_samples_ratio=negative_mos_samples_ratio, undelivered_messages=undelivered_messages,
-    #         avg_sms_delivery_time=avg_sms_delivery_time, http_failure_session=http_failure_session,
-    #         http_ul_mean_userdata_rate=http_ul_mean_userdata_rate,
-    #         http_dl_mean_userdata_rate=http_dl_mean_userdata_rate, http_session_time=http_session_time,
-    #         number_of_test_voice_connections=number_of_test_voice_connections,
-    #         number_of_voice_sequences=number_of_voice_sequences,
-    #         voice_connections_with_low_intelligibility=voice_connections_with_low_intelligibility,
-    #         number_of_sms_messages=number_of_sms_messages,
-    #         number_of_connections_attempts_http=number_of_connections_attempts_http,
-    #         number_of_test_sessions_http=number_of_test_sessions_http, )
+    for el in data["measurements_set"][0]:
+        metric = el
+        metric_id = metric["id"]
+        voice_service_non_accessibility = metric["voice_service_non_accessibility"]
+        voice_service_cut_off = metric["voice_service_cut_off"]
+        speech_quality_on_call = metric["speech_quality_on_call"]
+        negative_mos_samples_ratio = metric["negative_mos_samples_ratio"]
+        undelivered_messages = metric["undelivered_messages"]
+        avg_sms_delivery_time = metric["avg_sms_delivery_time"]
+        http_failure_session = metric["http_failure_session"]
+        http_ul_mean_userdata_rate = metric["http_ul_mean_userdata_rate"]
+        http_dl_mean_userdata_rate = metric["http_dl_mean_userdata_rate"]
+        http_session_time = metric["http_session_time"]
+        number_of_test_voice_connections = metric["number_of_test_voice_connections"]
+        number_of_voice_sequences = metric["number_of_voice_sequences"]
+        voice_connections_with_low_intelligibility = metric["voice_connections_with_low_intelligibility"]
+        number_of_sms_messages = metric["number_of_sms_messages"]
+        number_of_connections_attempts_http = metric["number_of_connections_attempts_http"]
+        number_of_test_sessions_http = metric["number_of_test_sessions_http"]
+        report_id = pk
+        Report.objects.filter(id=report_id).update(region=data["region"], city=data["city"],
+                                                   start_date=data["start_date"], end_date=data["end_date"], )
+        Measurements.objects.filter(id=metric_id).update(
+            voice_service_non_accessibility=voice_service_non_accessibility,
+            voice_service_cut_off=voice_service_cut_off, speech_quality_on_call=speech_quality_on_call,
+            negative_mos_samples_ratio=negative_mos_samples_ratio, undelivered_messages=undelivered_messages,
+            avg_sms_delivery_time=avg_sms_delivery_time, http_failure_session=http_failure_session,
+            http_ul_mean_userdata_rate=http_ul_mean_userdata_rate,
+            http_dl_mean_userdata_rate=http_dl_mean_userdata_rate, http_session_time=http_session_time,
+            number_of_test_voice_connections=number_of_test_voice_connections,
+            number_of_voice_sequences=number_of_voice_sequences,
+            voice_connections_with_low_intelligibility=voice_connections_with_low_intelligibility,
+            number_of_sms_messages=number_of_sms_messages,
+            number_of_connections_attempts_http=number_of_connections_attempts_http,
+            number_of_test_sessions_http=number_of_test_sessions_http, )
+    return Response({"data": "Данные успешно изменены"}, status=status.HTTP_200_OK)

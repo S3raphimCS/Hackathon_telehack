@@ -4,10 +4,10 @@ DJANGO_DEBUG=1
 DJANGO_ALLOWED_HOSTS=
 
 # Указываем рабочую почту для доступа к приложению
-DEFAULT_EMAIL=example@sovkombank.ru
+DEFAULT_EMAIL=example@rkot.ru
 
 # Указываем домен на котором разворачиваем приложение
-DOMAIN=institute.sovkombank.ru
+DOMAIN=rkot.ru
 
 POSTGRES_DB=db_name
 POSTGRES_USER=admin
