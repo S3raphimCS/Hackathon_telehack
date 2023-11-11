@@ -83,7 +83,7 @@ CSRF_TRUSTED_ORIGINS = ['http://localhost:3000']
 #     "POST",
 #     "PUT",
 # )
-# CSRF_TRUSTED_ORIGINS = ['https://2329-159-253-172-154.ngrok-free.app']  # ['http://localhost:3000']
+# CSRF_TRUSTED_ORIGINS = ['https://2329-159-253-172-154.ngrok-free.app']
 
 # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 

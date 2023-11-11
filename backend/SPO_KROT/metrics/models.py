@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator, FileExtensionValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -161,7 +161,8 @@ class ExcelFile(models.Model):
     file = models.FileField(
         upload_to='metrics',
         unique=True,
-        blank=True, null=True
+        blank=True, null=True,
+        validators=[FileExtensionValidator(['xlsx', 'xls', 'xlsm'])],
     )
 
     @property

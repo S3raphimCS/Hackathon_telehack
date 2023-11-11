@@ -167,6 +167,10 @@ class ExcelUploadView(APIView):
             create_report(excel.file, request.user)
             ExcelFile.objects.filter(file=excel.file).delete()
             return Response({"data": "Данные успешно добавлены", }, status=status.HTTP_201_CREATED)
+        return Response({
+            "error": "Ошибка обработки файла. "
+                     "Возможно был передан файл неправильного формата или неправильного содержания"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @swagger_auto_schema(
@@ -187,7 +191,8 @@ class ExcelUploadView(APIView):
                                                    'voice_service_non_accessibility': openapi.Schema(
                                                        type=openapi.FORMAT_DECIMAL),
                                                    'voice_service_cut_off': openapi.Schema(type=openapi.FORMAT_DECIMAL),
-                                                   'speech_quality_on_call': openapi.Schema(type=openapi.FORMAT_DECIMAL),
+                                                   'speech_quality_on_call': openapi.Schema(
+                                                       type=openapi.FORMAT_DECIMAL),
                                                    'negative_mos_samples_ratio': openapi.Schema(
                                                        type=openapi.FORMAT_DECIMAL),
                                                    'undelivered_messages': openapi.Schema(type=openapi.FORMAT_DECIMAL),
