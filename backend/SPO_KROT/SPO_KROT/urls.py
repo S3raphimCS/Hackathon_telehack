@@ -26,12 +26,12 @@ from rest_framework_simplejwt.views import (TokenObtainPairView,
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="СПО КРОТ",
+        title="СПО РКОТ",
         default_version='v1',
         description="API сервиса СПО РКОТ",
     ),
     public=True,
-    permission_classes=[permissions.IsAdminUser],
+    permission_classes=[permissions.AllowAny],
 )
 
 urlpatterns = [

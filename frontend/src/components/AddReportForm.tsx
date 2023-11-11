@@ -26,7 +26,7 @@ export default function AddReportForm({
   const onSubmit = (data: FormData) => {
     const formData = new FormData();
     formData.append('file', data.files[0])
-    fetch('http://localhost:8000/report/upload/', {
+    fetch('http://localhost:8000/api/v1/metrics/report/upload/', {
         method: 'POST',
         body: formData
     })
