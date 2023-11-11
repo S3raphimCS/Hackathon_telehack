@@ -108,7 +108,7 @@ DATABASES = {
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': os.environ.get("POSTGRES_DB", 'sovkombank'),
+#         'NAME': os.environ.get("POSTGRES_DB", 'rkot'),
 #         'USER': os.environ.get("POSTGRES_USER", 'admin'),
 #         'PASSWORD': os.environ.get("POSTGRES_PASSWORD", 'admin'),
 #         'HOST': os.environ.get("POSTGRES_HOST", 'pgdb'),
