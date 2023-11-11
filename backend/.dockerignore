@@ -1,0 +1,14 @@
+.dockerignore
+.env.tpl
+.git
+.gitignore
+.vscode
+Dockerfile
+LICENSE.md
+README.md
+requirements/*.ini
+setup.cfg
+tasks.py
+uwsgiconf/local/*
+uwsgiconf/remote/*
+**/migrations/
