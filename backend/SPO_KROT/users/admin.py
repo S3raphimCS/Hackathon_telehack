@@ -19,3 +19,8 @@ class UserAdmin(admin.ModelAdmin):
     list_per_page = 15
     search_fields = ('email', 'first_name', 'last_name', 'middle_name', 'department', 'employee_code')
     ordering = ('email',)
+
+    def save_model(self, request, obj, form, change):
+        if not obj.pk: 
+            obj.set_password(obj.password)
+        obj.save()
