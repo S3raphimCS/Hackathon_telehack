@@ -155,3 +155,15 @@ class Measurements(models.Model):
 
     def __str__(self):
         return f"Метрика {self.operator} из отчета {self.report}"
+
+
+class ExcelFile(models.Model):
+    file = models.FileField(
+        upload_to='metrics',
+        unique=True,
+        blank=True, null=True
+    )
+
+    @property
+    def filename(self):
+        return self.file.name.split('/')[-1:][0]

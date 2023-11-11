@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Report
+from .models import Report, ExcelFile
 
 
 class ReportListSerializer(serializers.ModelSerializer):
@@ -16,3 +16,9 @@ class ReportDetailSerializer(serializers.ModelSerializer):
         depth = 2
 
     publisher = serializers.CharField()
+
+
+class ExcelUploadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExcelFile
+        fields = ('file',)

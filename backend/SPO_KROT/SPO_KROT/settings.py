@@ -34,7 +34,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'drf_yasg',
     'rest_framework_simplejwt',
-    # 'django_cleanup',
+    'django_cleanup',
 ]
 
 MIDDLEWARE = [
@@ -85,7 +85,7 @@ CSRF_TRUSTED_ORIGINS = ['http://localhost:3000']
 # )
 # CSRF_TRUSTED_ORIGINS = ['https://2329-159-253-172-154.ngrok-free.app']  # ['http://localhost:3000']
 
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 ROOT_URLCONF = 'SPO_KROT.urls'
 

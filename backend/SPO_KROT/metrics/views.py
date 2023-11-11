@@ -6,13 +6,15 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from openpyxl import load_workbook
 from django.utils.translation import gettext_lazy as _
-from rest_framework import status, generics
+from rest_framework import status, generics, viewsets
+from rest_framework.generics import CreateAPIView
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
+from .models import ExcelFile
 
 from .models import Measurements, Operator, Report
-from .serializers import ReportListSerializer, ReportDetailSerializer
+from .serializers import ReportListSerializer, ReportDetailSerializer, ExcelUploadSerializer
 
 update_metrics_example = [
     {
@@ -75,28 +77,25 @@ class ReportDownload(APIView):
 
 
 # Подумать если будут кидать одинаковый отчет с разными названиями
-@swagger_auto_schema(
-    method='POST',
-    operation_description=_("Создание случайного пароля"),
-    request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        required=['filename', 'sheetname'],
-        properties={
-            'filename': openapi.Schema(type=openapi.TYPE_STRING),
-            'sheetname': openapi.Schema(type=openapi.TYPE_STRING),
-        },
-    )
-)
-@api_view(["POST"])
-def create_report(request):
-    filename = request.data["filename"]
-    sheetname = request.data['sheetname']
-    parse_result = parse_excel(filename, sheetname)
-    print(parse_result)
+# @swagger_auto_schema(
+#     # method='POST',
+#     operation_description=_("Создание случайного пароля"),
+#     request_body=openapi.Schema(
+#         type=openapi.TYPE_OBJECT,
+#         required=['filename', 'sheetname'],
+#         properties={
+#             'filename': openapi.Schema(type=openapi.TYPE_STRING),
+#         },
+#     )
+# )
+# @api_view(["POST"])
+def create_report(filename, user):  # request
+    # filename = request.data["filename"]
+    parse_result = parse_excel(filename)
     if parse_result:
         report = Report.objects.create(title=filename, region=parse_result["region"],
                                        city=parse_result["city"], start_date=parse_result["start_date"],
-                                       end_date=parse_result["end_date"], publisher=request.user)
+                                       end_date=parse_result["end_date"], publisher=user)
         for metric in parse_result['metrics']:
             operator = Operator.objects.get_or_create(name=metric[0])[0]
             parse_metrics = metric[1]
@@ -118,10 +117,10 @@ def create_report(request):
         return Response({"error": "Ошибка при работе с файлом"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-def parse_excel(filename, sheetname):
+def parse_excel(filename):
     try:
         wb = load_workbook(filename)
-        sheet = wb[sheetname]
+        sheet = wb.active
     except FileNotFoundError:
         return FileNotFoundError("Файл не найден")  # "Файл не найден"
     except Exception as excp:
@@ -142,7 +141,7 @@ def parse_excel(filename, sheetname):
                     if j == 23 or j == 26 or j == 31:
                         continue
                     else:
-                        values.append(sheet[f'{value}{j}'].value)
+                        values.append(round(sheet[f'{value}{j}'].value, 1))
                 values = tuple(values)
                 operators.update({sheet[f'{value}18'].value: values})
 
@@ -160,9 +159,14 @@ def parse_excel(filename, sheetname):
         return None  # f"Ошибка при парсинге: {excp}"
 
 
-# ENDPOINT на обновление одной метрики
-def download(request, excel):
-    pass
+class ExcelUploadView(APIView):
+    def post(self, request):
+        serializer = ExcelUploadSerializer(data=request.data)
+        if serializer.is_valid():
+            excel = serializer.save()
+            create_report(excel.file, request.user)
+            ExcelFile.objects.filter(file=excel.file).delete()
+            return Response({"data": "Данные успешно добавлены", }, status=status.HTTP_201_CREATED)
 
 
 @swagger_auto_schema(

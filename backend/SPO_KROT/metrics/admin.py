@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Measurements, Operator, Report
+from .models import Measurements, Operator, Report, ExcelFile
 
 
 @admin.register(Operator)
@@ -43,3 +43,8 @@ class MeasurementAdmin(admin.ModelAdmin):
     list_per_page = 20
     list_filter = ('operator', 'report__start_date', 'report__end_date', 'report__region', 'report__city')
     search_fields = ('operator', 'report__title', 'report__region', 'report__city')
+
+
+@admin.register(ExcelFile)
+class FileAdmin(admin.ModelAdmin):
+    pass
