@@ -1,0 +1,20 @@
+{% extends 'admin/change_list.html' %}
+
+{% block object-tools %}
+  {% if messages %}
+    {% for message in messages %}
+      {{ message }}
+    {% endfor %}
+  {% endif %}
+  <form action="{% url 'signup_user' %}" method="POST">
+    {% csrf_token %}
+    <input type="email" placeholder="Почта" name="email">
+    <input type="text" placeholder="Фамилия" name="last_name">
+    <input type="text" placeholder="Имя" name="first_name">
+    <input type="text" placeholder="Отчество" name="middle_name">
+    <input type="submit" value="Создать нового пользователя" />
+<!--    {{ form.as_p }}-->
+  </form><br>
+  {{ block.super }}
+
+{% endblock %}

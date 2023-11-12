@@ -1,9 +1,12 @@
-from django.contrib import admin
+from django.contrib import admin, messages
+from django.contrib.auth import get_user_model
+from django.http import HttpResponseRedirect
 from django.urls import path
+from rest_framework.decorators import api_view
 
-from .models import CustomUser
-from .views import signup_user
 from .forms import UserSignUpForm
+from .models import CustomUser
+from .views import create_random_password
 
 
 @admin.register(CustomUser)
@@ -16,9 +19,26 @@ class UserAdmin(admin.ModelAdmin):
         custom_urls = [path('create/', self.signup, name='create_new_user')]
         return custom_urls + urls
 
-    def signup(self, request):
-        # signup_user(request)
-        self.message_user(request, f'Создан новый пользователь')
+    @api_view(["POST"])
+    def signup(self):
+        form = UserSignUpForm(data=self.POST)
+        if form.is_valid():
+            password = create_random_password(15)
+            get_user_model().objects.create(email=form["email"].value(), first_name=form["first_name"].value(),
+                                            last_name=form["last_name"].value(),
+                                            middle_name=form["middle_name"].value(),
+                                            password=password)
+            return HttpResponseRedirect('../../../../admin/users/customuser',
+                                        {"messages": messages.success(self,
+                                                                      f"Пользователь успешно добавлен\n"
+                                                                      f"Логин: {form['email'].value()}\n"
+                                                                      f"Пароль: {password}")})
+        return HttpResponseRedirect("../../../../admin/users/customuser",
+                                    {"messages": messages.error(self,
+                                                                'Форма не прошла валидацию. Проверьте, '
+                                                                'не ошиблись ли вы в почте, '
+                                                                'либо нет ли зарегистрированного пользователя '
+                                                                'с такой почтой')})
 
     fieldsets = (
         ("Основная информация", {'fields': ('email', 'password')}),

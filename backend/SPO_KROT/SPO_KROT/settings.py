@@ -13,7 +13,7 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", 'set_me_in_prod')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-# Ngrok'у требуется Debug=True для работы , так как мы не можем разрешить их доменное имя
+# Ngrok'у требуется Debug=True для работы, так как мы не можем разрешить их доменное имя
 DEBUG = os.environ.get("DJANGO_DEBUG", True)
 
 # Если посадить на ngrok, то написать в allowed '*'
@@ -61,20 +61,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
-    # 'DEFAULT_THROTTLE_CLASSES': [
-    #     'rest_framework.throttling.AnonRateThrottle',
-    #     'rest_framework.throttling.UserRateThrottle'
-    # ],
-    # 'DEFAULT_THROTTLE_RATES': {
-    #     'anon': '7/hour',
-    #     'user': '10/minute'
-    # }
     "DATE_INPUT_FORMATS": ["%d-%m-%Y"],
-    # 'DEFAULT_PARSER_CLASSES': (
-    #     'rest_framework.parsers.FormParser',
-    #     'rest_framework.parsers.MultiPartParser',
-    #     "rest_framework.parsers.JSONParser",
-    #  )
 }
 
 SIMPLE_JWT = {
@@ -127,24 +114,17 @@ WSGI_APPLICATION = 'SPO_KROT.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# Настройки для Postgres'a
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get("POSTGRES_DB", 'rkot'),
+        'USER': os.environ.get("POSTGRES_USER", 'admin'),
+        'PASSWORD': os.environ.get("POSTGRES_PASSWORD", 'admin'),
+        'HOST': os.environ.get("POSTGRES_HOST", 'pgdb'),
+        'PORT': os.environ.get("POSTGRES_PORT", '5432'),
     }
 }
-
-# Настройки для Postgres'a
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': os.environ.get("POSTGRES_DB", 'rkot'),
-#         'USER': os.environ.get("POSTGRES_USER", 'admin'),
-#         'PASSWORD': os.environ.get("POSTGRES_PASSWORD", 'admin'),
-#         'HOST': os.environ.get("POSTGRES_HOST", 'pgdb'),
-#         'PORT': os.environ.get("POSTGRES_PORT", '5432'),
-#     }
-# }
 
 
 # Password validation

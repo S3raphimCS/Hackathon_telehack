@@ -1,9 +1,8 @@
 import json
 from re import split as resplit
-from django.db.models import CharField, QuerySet, DateField
-from django.db.models import Q
 
 from datefinder import find_dates
+from django.db.models import CharField, DateField, Q, QuerySet
 from django.utils.translation import gettext_lazy as _
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
