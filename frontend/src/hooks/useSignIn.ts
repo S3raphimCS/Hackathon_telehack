@@ -1,12 +1,8 @@
 "use client";
 
 import { saveTokens, signIn } from "@/services/users";
-import { IUser, IUserSignIn } from "@/types/users";
-import {
-  UseMutateFunction,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { IUserSignIn } from "@/types/users";
+import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
 export function useSignIn() {

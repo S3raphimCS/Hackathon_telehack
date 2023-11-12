@@ -10,6 +10,7 @@ import Typography from "@mui/material/Typography";
 import { useForm } from "react-hook-form";
 import { uploadReport } from "@/services/reports";
 import { IReportUpload } from "@/types/reports";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function AddReportForm({
   open,
@@ -21,9 +22,12 @@ export default function AddReportForm({
   const { register, handleSubmit, watch, reset } = useForm<IReportUpload>();
   const files = watch("files");
 
+  const queryClient = useQueryClient()
+
   const onSubmit = (data: IReportUpload) => {
     try {
       uploadReport(data);
+      queryClient.invalidateQueries({ queryKey: ['reports'] })
     } catch (e) {
       console.log(e);
     }

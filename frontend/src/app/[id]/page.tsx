@@ -16,6 +16,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import { Report, MeasurementKeys } from "@/types/reports";
+import { useUser } from "@/hooks/useUser";
 
 const schema = z.object({
   region: z.string(),
@@ -46,6 +47,8 @@ const schema = z.object({
 });
 
 export default function ReportPage() {
+  useUser();
+
   const {
     register,
     control,

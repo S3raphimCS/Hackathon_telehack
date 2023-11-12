@@ -35,3 +35,21 @@ interface Measurement {
   export interface IReportUpload {
     files: FileList;
   }
+
+  export interface IReports {
+    count: number,
+    next: string | null,
+    previous: string,
+    results: [
+      {
+        id: number,
+        title: string,
+        region: string,
+        city: string,
+        start_date: string,
+        end_date: string,
+        published: string,
+        publisher: number
+      },
+    ]
+  }
