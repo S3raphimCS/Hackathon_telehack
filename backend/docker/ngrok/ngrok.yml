@@ -1,0 +1,37 @@
+version: 2
+
+authtoken: 2Y2TsNdca4DtvFTHBpYWgf1LngA_36b6x9XRmwuf8zzfKk9LY
+
+connect_timeout: 30s
+console_ui: true
+console_ui_color: transparent
+dns_resolver_ips:
+  - 8.8.8.8
+  - 8.8.4.4
+heartbeat_interval: 1m
+heartbeat_tolerance: 5s
+
+log_level: info
+log_format: json
+
+
+region: jp
+
+update_channel: stable
+update_check: false
+
+web_addr: 0.0.0.0:4040
+
+tunnels:
+  react_app:
+    proto: http
+    addr: react_app:3000
+    host_header: rewrite
+  
+  django_web:
+    proto: http
+    addr: django_web:8000
+    
+  # Django создаётся командой
+    # ngrok http django_web:8000 --authtoken 2Y2TsNdca4DtvFTHBpYWgf1LngA_36b6x9XRmwuf8zzfKk9LY 
+    

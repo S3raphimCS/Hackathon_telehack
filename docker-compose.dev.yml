@@ -6,7 +6,6 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: django_web
-    command: sh -c "python manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./backend/SPO_KROT:/api 
     ports: 
@@ -36,18 +35,37 @@ services:
     networks:  
       - backend_net
   
-  # react-app:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #   container_name: react_app
-  #   volumes:
-  #     - ./frontend:/frontend
-  #   ports:
-  #   - "3000:3000"
-  #   networks:
-  #     - backend_net
   
+  react-app:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: react_app
+    volumes:
+      - ./frontend:/frontend
+    ports:
+      - "3000:3000"
+    networks:
+      - backend_net
+  
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: ngrok
+    command: 
+      - "start"
+      - "--all"
+      - "--config"
+      - "/etc/ngrok.yml"
+    volumes:
+      - ./backend/docker/ngrok/ngrok.yml:/etc/ngrok.yml
+    env_file:
+      - .env
+    ports:
+      - "4040:4040"
+    depends_on:
+      - django
+    networks:
+      - backend_net
 
 volumes:
   pgdata:

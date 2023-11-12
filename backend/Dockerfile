@@ -14,5 +14,6 @@ WORKDIR /api
 RUN adduser --disabled-password --no-create-home django
 USER django
 
-# Prod version 
-CMD ["uwsgi", "--socket", ":9000", "--workers", "4", "--master", "--enable-threads", "--module", "app.wsgi"]
+
+COPY ./entrypoint.sh / 
+ENTRYPOINT [ "sh", "/entrypoint.sh" ]

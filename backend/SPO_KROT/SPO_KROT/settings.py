@@ -12,6 +12,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", 'set_me_in_prod')
 
 # SECURITY WARNING: don't run with debug turned on in production!
+
+# Ngrok'у требуется Debug=True для работы , так как мы не можем разрешить их доменное имя
 DEBUG = os.environ.get("DJANGO_DEBUG", True)
 
 # Если посадить на ngrok, то написать в allowed '*'
@@ -98,7 +100,7 @@ CORS_ALLOW_METHODS = (
     "POST",
     "PUT",
 )
-CSRF_TRUSTED_ORIGINS = ['https://42cf-159-253-172-154.ngrok-free.app', 'http://localhost:3000']
+CSRF_TRUSTED_ORIGINS = ['http://localhost:3000']
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
@@ -192,6 +194,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Auth model here
 AUTH_USER_MODEL = 'users.CustomUser'
-
-CELERY_BROKER_URL = 'redis://redis:6379/0'
-CELERY_RESULT_URL = 'redis://redis:6379/1'
