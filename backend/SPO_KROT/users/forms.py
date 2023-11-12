@@ -1,5 +1,4 @@
 from django import forms
-from django.contrib.auth.forms import ReadOnlyPasswordHashField, UserChangeForm
 
 from .models import CustomUser
 
@@ -14,7 +13,6 @@ class UserCreationForm(forms.ModelForm):
     password = forms.CharField(label='Пароль', widget=forms.PasswordInput)
 
     def save(self, commit=True):
-        # Save the provided password in hashed format
         user = super(UserCreationForm, self).save(commit=False)
         user.set_password(self.cleaned_data["password1"])
         if commit:
