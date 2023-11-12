@@ -21,6 +21,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { editReport, getReport } from "@/services/reports";
 import { useMask } from "@react-input/mask";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 const schema = z.object({
   region: z.string(),
@@ -80,7 +81,7 @@ export default function ReportPage({ params }: { params: { id: number } }) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["reports"] });
       // queryClient.invalidateQueries({ queryKey: ["report", params.id] });
-      toast.success('Успешно');
+      toast.success("Успешно");
     },
     onError: (error) => {
       toast.error(error.message);
@@ -216,26 +217,34 @@ export default function ReportPage({ params }: { params: { id: number } }) {
     separate: true,
   });
 
+  const router = useRouter();
+
   return (
     <Box sx={{ p: 1 }}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Box sx={{ p: 1 }}>
-          <TextField
-            label="Федеральный округ (ФО)"
-            sx={{ width: "250px", mr: 2 }}
-            size="small"
-            {...register("region")}
-            InputLabelProps={{ shrink: true }}
-          />
-          <TextField
-            label="Место проведения контроля"
-            sx={{ width: "400px" }}
-            size="small"
-            {...register("city")}
-            InputLabelProps={{ shrink: true }}
-          />
+        <Box sx={{ p: 1, display: "flex", justifyContent: "space-between" }}>
+          <Box>
+            <TextField
+              label="Федеральный округ (ФО)"
+              sx={{ width: "250px", mr: 2 }}
+              size="small"
+              {...register("region")}
+              InputLabelProps={{ shrink: true }}
+            />
+            <TextField
+              label="Место проведения контроля"
+              sx={{ width: "400px" }}
+              size="small"
+              {...register("city")}
+              InputLabelProps={{ shrink: true }}
+            />
+          </Box>
+          <Box>
+            <Button onClick={() => {router.push('/')}}>
+              Назад
+            </Button>
+          </Box>
         </Box>
-
         <Typography sx={{ m: 1, color: "gray" }} variant="body1">
           Период проведения контроля
         </Typography>
