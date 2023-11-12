@@ -1,0 +1,43 @@
+version: 2
+
+# Токен аккаунта команды, статус аккаунта Free
+authtoken: 2Y2TsNdca4DtvFTHBpYWgf1LngA_36b6x9XRmwuf8zzfKk9LY
+
+connect_timeout: 30s
+
+# Внешний вид сервиса
+console_ui: true
+console_ui_color: transparent
+
+# DNS адреса (Google.com)
+dns_resolver_ips:
+  - 8.8.8.8
+  - 8.8.4.4
+heartbeat_interval: 1m
+heartbeat_tolerance: 5s
+
+# Уровень логирования сервиса
+log_level: info
+log_format: json
+
+# Наиболее близкий регион Дальнего Востока, ru регион не работает из-за санкций
+region: jp
+
+update_channel: stable
+update_check: false
+
+# Адрес службы localhost:4040
+web_addr: 0.0.0.0:4040
+
+# Тунелирование частей frontend и backend
+tunnels:
+  react_app:
+    proto: http
+    addr: react_app:3000
+    host_header: rewrite
+  
+  django_web:
+    proto: http
+    addr: django_web:8000
+
+    
