@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
@@ -10,18 +11,30 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Link from "next/link";
-import AddReportForm from "@/components/AddReportForm";
+import AddReportForm from "@/components/addReportForm";
+import { useUser } from "@/hooks/useUser";
 
 export default function Home() {
+  const [open, setOpen] = React.useState<boolean>(false);
+
+  const handleOpen = () => {
+    setOpen(true);
+  }
+
+  const handleClose = () => {
+    setOpen(false);
+  }
+
+  useUser();
+
   return (
     <>
       <main>
         <Box sx={{ p: 1 }}>
-          <Button variant="contained" sx={{ mr: 1 }}>
+          <Button variant="contained" sx={{ mr: 1 }} onClick={handleOpen}>
             Добавить отчет
           </Button>
           <Button variant="contained">Обновить страницу</Button>
-          <AddReportForm open={true} handleClose={() => {}}/>
         </Box>
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -50,6 +63,7 @@ export default function Home() {
           </Table>
         </TableContainer>
       </main>
+      <AddReportForm open={open} handleClose={handleClose}/>
     </>
   );
 }

@@ -20,7 +20,7 @@ export default function AddReportForm({
   open: boolean;
   handleClose: () => void;
 }) {
-  const { register, handleSubmit, watch } = useForm<FormData>();
+  const { register, handleSubmit, watch, reset } = useForm<FormData>();
   const files = watch("files");
 
   const onSubmit = (data: FormData) => {
@@ -32,8 +32,13 @@ export default function AddReportForm({
     })
   };
 
+  const handleCloseWithReset = () => {
+    reset();
+    handleClose();
+  }
+
   return (
-    <Modal open={open} onClose={handleClose}>
+    <Modal open={open} onClose={handleCloseWithReset}>
       <Box
         sx={{
           position: "absolute",
@@ -68,7 +73,7 @@ export default function AddReportForm({
               {...register("files")}
             />
           </Button>
-            <Typography noWrap sx={{ m: 1 }}>{files?.[0].name}</Typography>
+            <Typography noWrap sx={{ m: 1 }}>{files?.[0]?.name}</Typography>
           <Button
             type="submit"
             variant="contained"

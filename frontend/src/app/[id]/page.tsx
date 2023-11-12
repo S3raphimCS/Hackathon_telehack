@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -14,40 +15,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
-
-interface Measurement {
-  id: number;
-  operator: {
-    id: number;
-    name: string;
-  };
-  voice_service_non_accessibility: number;
-  voice_service_cut_off: number;
-  speech_quality_on_call: number;
-  negative_mos_samples_ratio: number;
-  undelivered_messages: number;
-  avg_sms_delivery_time: number;
-  http_failure_session: number;
-  http_ul_mean_userdata_rate: number;
-  http_dl_mean_userdata_rate: number;
-  http_session_time: number;
-  number_of_test_voice_connections: number;
-  number_of_voice_sequences: number;
-  voice_connections_with_low_intelligibility: number;
-  number_of_sms_messages: number;
-  number_of_connections_attempts_http: number;
-  number_of_test_sessions_http: number;
-}
-
-interface MeasurementKeys extends Omit<Measurement, "id"> {}
-
-interface Report {
-  region: string;
-  place: string;
-  from: string;
-  to: string;
-  measurements: Measurement[];
-}
+import { Report, MeasurementKeys } from "@/types/reports";
 
 const schema = z.object({
   region: z.string(),
@@ -57,7 +25,7 @@ const schema = z.object({
   measurements: z.array(
     z.object({
       id: z.number(),
-      voice_service_non_accessibility: z.number(),
+      voice_service_non_accessibility: z.number().max(5),
       voice_service_cut_off: z.number(),
       speech_quality_on_call: z.number(),
       negative_mos_samples_ratio: z.number(),
@@ -82,9 +50,12 @@ export default function ReportPage() {
     register,
     control,
     handleSubmit,
+    getValues,
     formState: { errors },
   } = useForm<Report>({
     resolver: zodResolver(schema),
+    mode: "onBlur",
+    shouldFocusError: false,
     defaultValues: {
       region: "УФО",
       place: "г. Екатеринбург",
@@ -239,14 +210,17 @@ export default function ReportPage() {
     rows.push(<TableRow key={`measurements.${prop}`}>{cols}</TableRow>);
   }
 
-  const onSubmit = (data: Report) => {
-    console.log(data);
-    console.log(errors);
+  const onSubmit = () => {
+    console.log(getValues());
   };
+
+  React.useEffect(() => {
+    handleSubmit(() => {})();
+  },[]);
 
   return (
     <Box sx={{ p: 1 }}>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form  onSubmit={handleSubmit(() => {})}>
         <TextField
           label="Федеральный округ (ФО)"
           sx={{ m: 1, width: "250px" }}
@@ -257,7 +231,7 @@ export default function ReportPage() {
           sx={{ m: 1, width: "400px" }}
           {...register("place")}
         />
-        <Button type="submit" variant="contained">
+        <Button type="submit" variant="contained" onClick={onSubmit}>
           Сохранить
         </Button>
         <br />
