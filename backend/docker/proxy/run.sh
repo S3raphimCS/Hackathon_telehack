@@ -8,7 +8,7 @@ if [ ! -f "/vol/proxy/ssl-dhparams.pem" ]; then
   openssl dhparam -out /vol/proxy/ssl-dhparams.pem 2048
 fi
 
-# Avoid replacing these with envsubst
+# Избегаем замены используя envsubst
 export host=\$host
 export request_uri=\$request_uri
 

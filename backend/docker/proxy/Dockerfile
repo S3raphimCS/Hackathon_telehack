@@ -1,5 +1,7 @@
 FROM nginx:alpine
 
+LABEL MAINTAINER: Andrew Medvedev hydra1337channel@gmail.com
+
 COPY ./nginx/* /etc/nginx/
 COPY ./run.sh /run.sh
 

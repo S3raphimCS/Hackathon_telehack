@@ -2,6 +2,8 @@
 
 FROM python:3.10-alpine3.16
 
+LABEL MAINTAINER: Andrew Medvedev hydra1337channel@gmail.com
+
 ENV PYTHONUNBUFFERED=1
 COPY /requirements.txt /requirements.txt
 

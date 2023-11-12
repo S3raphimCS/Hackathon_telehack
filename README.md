@@ -24,23 +24,23 @@
 >```cp .env.tpl .env```
 > ```copy .env.tpl```
 
-Для запуска контейнеров требуется прописать в терминале команду, приведённую ниже, обязательно требуется находиться в корневом каталоге. t
-> docker-compose build\
-> docker-compose up\
-> docker exec -it django_web sh -c "python manage.py makemigrations"\
-> docker exec -it django_web sh -c "python manage.py migrate"\
-> docker restart django_web\
+Для запуска контейнеров требуется прописать в терминале команду, приведённую ниже, обязательно требуется находиться в корневом каталоге. В проекте существует две вариации работы с докером, это dev и prod версии. Приведём пример на dev версии.
+> docker-compose -f docker-compose.dev.yml build\
+> docker-compose -f docker-compose.dev.yml up\
+
+Для развёртывания приложения требуется передать в параметр -f docker-compose-prod.yml. Prod версия содержит в себе сервисы Certbot и Nginx.
 
 Для выключения контейнеров:
-> docker-compose down
+> docker-compose -f docker-compose.dev.yml down
 
 Каждый контейнер записывает логи в формате JSON-файла
 > docker info --format '{{.LoggingDriver}}'\
 Вывод: json-file
 
 По каждому контейнеру можно просмотреть лог, пример:
-> docker logs nginx
+> docker logs pgdb
 
 Приложение автоматически работает на соответсвующих портах:
 > Django REST Framework - Домен:8000\
-React application -  Домен:3000
+React application -  Домен:3000\
+PostgreSQL - КластерСУБД:5432
