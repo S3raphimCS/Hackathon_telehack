@@ -8,10 +8,8 @@ import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useForm } from "react-hook-form";
-
-interface FormData {
-  files: FileList;
-}
+import { uploadReport } from "@/services/reports";
+import { IReportUpload } from "@/types/reports";
 
 export default function AddReportForm({
   open,
@@ -20,22 +18,21 @@ export default function AddReportForm({
   open: boolean;
   handleClose: () => void;
 }) {
-  const { register, handleSubmit, watch, reset } = useForm<FormData>();
+  const { register, handleSubmit, watch, reset } = useForm<IReportUpload>();
   const files = watch("files");
 
-  const onSubmit = (data: FormData) => {
-    const formData = new FormData();
-    formData.append('file', data.files[0])
-    fetch('http://localhost:8000/api/v1/metrics/report/upload/', {
-        method: 'POST',
-        body: formData
-    })
+  const onSubmit = (data: IReportUpload) => {
+    try {
+      uploadReport(data);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const handleCloseWithReset = () => {
     reset();
     handleClose();
-  }
+  };
 
   return (
     <Modal open={open} onClose={handleCloseWithReset}>
@@ -73,7 +70,9 @@ export default function AddReportForm({
               {...register("files")}
             />
           </Button>
-            <Typography noWrap sx={{ m: 1 }}>{files?.[0]?.name}</Typography>
+          <Typography noWrap sx={{ m: 1 }}>
+            {files?.[0]?.name}
+          </Typography>
           <Button
             type="submit"
             variant="contained"

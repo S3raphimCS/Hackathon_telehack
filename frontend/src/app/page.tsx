@@ -11,7 +11,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Link from "next/link";
-import AddReportForm from "@/components/addReportForm";
+import AddReportForm from "@/components/AddReportForm";
 import { useUser } from "@/hooks/useUser";
 
 export default function Home() {

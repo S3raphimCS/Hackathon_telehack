@@ -21,7 +21,6 @@ export function useUser(): IUseUser {
   });
 
   useEffect(() => {
-    console.log(user)
     if (!isLoading && !user) {
       removeTokens();
       router.push("/signin");

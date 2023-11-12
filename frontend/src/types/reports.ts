@@ -31,3 +31,7 @@ interface Measurement {
     to: string;
     measurements: Measurement[];
   }
+
+  export interface IReportUpload {
+    files: FileList;
+  }
