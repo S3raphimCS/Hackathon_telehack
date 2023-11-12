@@ -118,9 +118,9 @@ WSGI_APPLICATION = 'SPO_KROT.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get("POSTGRES_DB", 'rkot'),
-        'USER': os.environ.get("POSTGRES_USER", 'admin'),
-        'PASSWORD': os.environ.get("POSTGRES_PASSWORD", 'admin'),
+        'NAME': os.environ.get("POSTGRES_DB", 'root'),
+        'USER': os.environ.get("POSTGRES_USER", 'root'),
+        'PASSWORD': os.environ.get("POSTGRES_PASSWORD", 'root'),
         'HOST': os.environ.get("POSTGRES_HOST", 'pgdb'),
         'PORT': os.environ.get("POSTGRES_PORT", '5432'),
     }

@@ -9,9 +9,9 @@ DEFAULT_EMAIL=example@rkot.ru
 # Указываем домен на котором разворачиваем приложение
 DOMAIN=rkot.ru
 
-POSTGRES_DB=db_name
-POSTGRES_USER=admin
-POSTGRES_PASSWORD=admin
+POSTGRES_DB=root
+POSTGRES_USER=root
+POSTGRES_PASSWORD=root
 POSTGRES_PORT=5432
 POSTGRES_HOST=pgdb
 

@@ -34,6 +34,10 @@
 > docker-compose -f docker-compose.dev.yml build\
 > docker-compose -f docker-compose.dev.yml up
 
+Далее нужно применить миграции Django Framework
+>docker exec -it django_web sh -c "python manage.py makemigrations"
+>docker exec -it django_web sh -c "python manage.py migrate"
+
 Для развёртывания приложения требуется передать в параметр -f docker-compose-prod.yml. Prod версия содержит в себе сервисы Certbot и Nginx.
 
 Для выключения контейнеров:
