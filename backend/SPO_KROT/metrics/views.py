@@ -1,4 +1,7 @@
+import json
 from re import split as resplit
+from django.db.models import CharField, QuerySet, DateField
+from django.db.models import Q
 
 from datefinder import find_dates
 from django.utils.translation import gettext_lazy as _
@@ -8,7 +11,6 @@ from openpyxl import load_workbook
 from rest_framework import generics, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.throttling import UserRateThrottle
 from rest_framework.views import APIView
 
 from users.models import CustomUser
@@ -71,22 +73,44 @@ class ReportListView(generics.ListAPIView):
     queryset = Report.objects.all()
     serializer_class = ReportListSerializer
 
-# Подумать если будут кидать одинаковый отчет с разными названиями
-# @swagger_auto_schema(
-#     # method='POST',
-#     operation_description=_("Создание случайного пароля"),
-#     request_body=openapi.Schema(
-#         type=openapi.TYPE_OBJECT,
-#         required=['filename', 'sheetname'],
-#         properties={
-#             'filename': openapi.Schema(type=openapi.TYPE_STRING),
-#         },
-#     )
-# )
-# @api_view(["POST"])
+
+class ReportSearchView(generics.ListAPIView):
+    serializer_class = ReportListSerializer
+
+    def get_queryset(self, *args, **kwargs):
+        query = self.request.GET.get('query')
+        fields = [f for f in Report._meta.fields if isinstance(f, CharField) or isinstance(f, DateField)]
+        queries = [Q(**{f.name + "__icontains": query}) for f in fields]
+        qs = Q()
+
+        sort = self.request.GET.get('sort').split(',')
+        print(sort)
+        fields = []
+        if sort:
+            print("Создает сортировка")
+            # fields = ["region", "city", "start_date", "end_date"]
+            for i in range(int(len(sort) / 2)):
+                fields.append(sort[i * 2 - 1])
+                sort_parameter = i * 2
+                if sort[sort_parameter - 1] == '-1':
+                    fields[i] = '-' + fields[i]
+
+        for el in queries:
+            qs = qs | el
+        print(fields)
+        return Report.objects.filter(qs).order_by(*fields)
+
+
+class ReportSortedView(generics.ListAPIView):
+    serializer_class = ReportListSerializer
+
+    def get_queryset(self):
+        query = self.request.GET.get("sort")
+
+
+
 def create_report(filename: str, user: CustomUser) -> Response:  # request
     """Функция для создания модели отчета и метрик в БД."""
-    # filename = request.data["filename"]
     parse_result = parse_excel(filename)
     if parse_result:
         report = Report.objects.create(title=filename, region=parse_result["region"],
@@ -158,7 +182,7 @@ def parse_excel(filename: str) -> dict | FileNotFoundError | None:
 
 class ExcelUploadView(APIView):
     """View загружает на сервер отчет Excel, выгружает в БД и удаляет с сервера."""
-    throttle_classes = [UserRateThrottle]
+
     def post(self, request):
         serializer = ExcelUploadSerializer(data=request.data)
         if serializer.is_valid():
@@ -188,20 +212,20 @@ class ExcelUploadView(APIView):
                                                items=openapi.Schema(type=openapi.TYPE_OBJECT, properties={
                                                    'id': openapi.Schema(type=openapi.TYPE_INTEGER),
                                                    'voice_service_non_accessibility': openapi.Schema(
-                                                       type=openapi.FORMAT_DECIMAL),
-                                                   'voice_service_cut_off': openapi.Schema(type=openapi.FORMAT_DECIMAL),
+                                                       type=openapi.FORMAT_FLOAT),
+                                                   'voice_service_cut_off': openapi.Schema(type=openapi.FORMAT_FLOAT),
                                                    'speech_quality_on_call': openapi.Schema(
-                                                       type=openapi.FORMAT_DECIMAL),
+                                                       type=openapi.FORMAT_FLOAT),
                                                    'negative_mos_samples_ratio': openapi.Schema(
-                                                       type=openapi.FORMAT_DECIMAL),
-                                                   'undelivered_messages': openapi.Schema(type=openapi.FORMAT_DECIMAL),
-                                                   'avg_sms_delivery_time': openapi.Schema(type=openapi.FORMAT_DECIMAL),
-                                                   'http_failure_session': openapi.Schema(type=openapi.FORMAT_DECIMAL),
+                                                       type=openapi.FORMAT_FLOAT),
+                                                   'undelivered_messages': openapi.Schema(type=openapi.FORMAT_FLOAT),
+                                                   'avg_sms_delivery_time': openapi.Schema(type=openapi.FORMAT_FLOAT),
+                                                   'http_failure_session': openapi.Schema(type=openapi.FORMAT_FLOAT),
                                                    'http_ul_mean_userdata_rate': openapi.Schema(
-                                                       type=openapi.FORMAT_DECIMAL),
+                                                       type=openapi.FORMAT_FLOAT),
                                                    'http_dl_mean_userdata_rate': openapi.Schema(
-                                                       type=openapi.FORMAT_DECIMAL),
-                                                   'http_session_time': openapi.Schema(type=openapi.FORMAT_DECIMAL),
+                                                       type=openapi.FORMAT_FLOAT),
+                                                   'http_session_time': openapi.Schema(type=openapi.FORMAT_FLOAT),
                                                    'number_of_test_voice_connections': openapi.Schema(
                                                        type=openapi.TYPE_INTEGER),
                                                    'number_of_voice_sequences': openapi.Schema(
@@ -220,10 +244,13 @@ class ExcelUploadView(APIView):
 @api_view(["PUT"])
 def update_report_metrics(request, pk):
     """Изменяет все метрики одного отчета"""
+    print(print(request.data))
     data = request.data
-    for el in data["measurements_set"][0]:
+    print('1')
+    for el in data["measurements_set"]:
         metric = el
         metric_id = metric["id"]
+        print('2')
         voice_service_non_accessibility = metric["voice_service_non_accessibility"]
         voice_service_cut_off = metric["voice_service_cut_off"]
         speech_quality_on_call = metric["speech_quality_on_call"]

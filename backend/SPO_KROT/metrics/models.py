@@ -80,60 +80,40 @@ class Measurements(models.Model):
         Report,
         on_delete=models.CASCADE,
     )
-    voice_service_non_accessibility = models.DecimalField(
+    voice_service_non_accessibility = models.FloatField(
         _("Доля неуспешных попыток установления голосового соединения"),
-        decimal_places=15,
-        max_digits=30,
         validators=PERCENTAGE_VALIDATOR
     )
-    voice_service_cut_off = models.DecimalField(
+    voice_service_cut_off = models.FloatField(
         _("Доля обрывов голосовых соединений"),
-        decimal_places=15,
-        max_digits=30,
         validators=PERCENTAGE_VALIDATOR
     )
-    speech_quality_on_call = models.DecimalField(
+    speech_quality_on_call = models.FloatField(
         _("Средняя разборчивость речи на соединение"),
-        decimal_places=15,
-        max_digits=30,
     )
-    negative_mos_samples_ratio = models.DecimalField(
+    negative_mos_samples_ratio = models.FloatField(
         _("Доля голосовых соединений с низкой разборчивостью речи"),
-        decimal_places=15,
-        max_digits=30,
         validators=PERCENTAGE_VALIDATOR
     )
-    undelivered_messages = models.DecimalField(
+    undelivered_messages = models.FloatField(
         _("Доля недоставленных SMS сообщений"),
-        decimal_places=15,
-        max_digits=30,
         validators=PERCENTAGE_VALIDATOR
     )
-    avg_sms_delivery_time = models.DecimalField(
+    avg_sms_delivery_time = models.FloatField(
         _("Среднее время доставки SMS сообщений"),
-        decimal_places=15,
-        max_digits=30,
     )
-    http_failure_session = models.DecimalField(
+    http_failure_session = models.FloatField(
         _("Доля неуспешных сессий по протоколу HTTP"),
-        decimal_places=15,
-        max_digits=30,
         validators=PERCENTAGE_VALIDATOR
     )
-    http_ul_mean_userdata_rate = models.DecimalField(
+    http_ul_mean_userdata_rate = models.FloatField(
         _("Среднее значение скорости передачи данных от абонента"),
-        decimal_places=15,
-        max_digits=30,
     )
-    http_dl_mean_userdata_rate = models.DecimalField(
+    http_dl_mean_userdata_rate = models.FloatField(
         _("Среднее значение скорости передачи данных к абоненту"),
-        decimal_places=15,
-        max_digits=30,
     )
-    http_session_time = models.DecimalField(
+    http_session_time = models.FloatField(
         _("Продолжительность успешной сессии"),
-        decimal_places=15,
-        max_digits=30,
     )
     number_of_test_voice_connections = models.IntegerField(
         _("Общее количество тестовых голосовых соединений "),

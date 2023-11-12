@@ -1,10 +1,25 @@
 from django.contrib import admin
+from django.urls import path
 
 from .models import CustomUser
+from .views import signup_user
+from .forms import UserSignUpForm
 
 
 @admin.register(CustomUser)
 class UserAdmin(admin.ModelAdmin):
+    change_list_template = 'articles/model_change_list.html'
+
+    def get_urls(self):
+        urls = super(UserAdmin, self).get_urls()
+
+        custom_urls = [path('create/', self.signup, name='create_new_user')]
+        return custom_urls + urls
+
+    def signup(self, request):
+        # signup_user(request)
+        self.message_user(request, f'Создан новый пользователь')
+
     fieldsets = (
         ("Основная информация", {'fields': ('email', 'password')}),
         ("ФИО", {'fields': ('first_name', 'last_name', 'middle_name')}),

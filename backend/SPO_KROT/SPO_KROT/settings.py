@@ -15,7 +15,7 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", 'set_me_in_prod')
 DEBUG = os.environ.get("DJANGO_DEBUG", True)
 
 # Если посадить на ngrok, то написать в allowed '*'
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
+ALLOWED_HOSTS = ["*"]  # ['localhost', '127.0.0.1', '0.0.0.0']
 
 # Application definition
 
@@ -67,10 +67,16 @@ REST_FRAMEWORK = {
     #     'anon': '7/hour',
     #     'user': '10/minute'
     # }
+    "DATE_INPUT_FORMATS": ["%d-%m-%Y"],
+    # 'DEFAULT_PARSER_CLASSES': (
+    #     'rest_framework.parsers.FormParser',
+    #     'rest_framework.parsers.MultiPartParser',
+    #     "rest_framework.parsers.JSONParser",
+    #  )
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=10),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'TOKEN_OBTAIN_SERIALIZER': 'users.serializers.MyTokenObtainPairSerializer',
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'AUTH_HEADER_TYPES': ('Bearer',),
@@ -79,21 +85,22 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
+    'https://42cf-159-253-172-154.ngrok-free.app',
 ]
 
-CSRF_TRUSTED_ORIGINS = ['http://localhost:3000']
+# CSRF_TRUSTED_ORIGINS = ['http://localhost:3000']
 
-# CORS_ALLOW_METHODS = (
-#     "DELETE",
-#     "GET",
-#     "OPTIONS",
-#     "PATCH",
-#     "POST",
-#     "PUT",
-# )
-# CSRF_TRUSTED_ORIGINS = ['https://2329-159-253-172-154.ngrok-free.app']
+CORS_ALLOW_METHODS = (
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+)
+CSRF_TRUSTED_ORIGINS = ['https://42cf-159-253-172-154.ngrok-free.app', 'http://localhost:3000']
 
-# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 ROOT_URLCONF = 'SPO_KROT.urls'
 

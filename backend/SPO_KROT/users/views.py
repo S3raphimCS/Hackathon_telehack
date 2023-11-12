@@ -6,9 +6,8 @@ from django.utils.translation import gettext_lazy as _
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
-from rest_framework.decorators import api_view, throttle_classes
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.throttling import UserRateThrottle
 
 
 @api_view(["GET"])
@@ -51,7 +50,6 @@ def create_random_password(pass_len):
         }
     )
 )
-@throttle_classes([UserRateThrottle])
 @api_view(["POST"])
 def signup_user(request):
     """Создает пользователя и генерирует ему уникальный пароль"""
@@ -60,7 +58,8 @@ def signup_user(request):
         return Response({"error": 'Пользователь с такой почтой уже существует'}, status=status.HTTP_400_BAD_REQUEST)
     password = create_random_password(15)
     get_user_model().objects.create(email=data["email"], first_name=data["first_name"], last_name=data["last_name"],
-                                    middle_name=data["middle_name"], password=password, is_superuser=True, is_staff=True)
+                                    middle_name=data["middle_name"], password=password, is_superuser=True,
+                                    is_staff=True)
     return Response(
         {
             "data": "Пользователь успешно создан",

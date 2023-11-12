@@ -22,8 +22,26 @@ class UserCreationForm(forms.ModelForm):
         return user
 
 
-class UserChangeForm(UserChangeForm):
-    class Meta(UserChangeForm.Meta):
+class UserSignUpForm(forms.ModelForm):
+    class Meta:
         model = CustomUser
+        fields = ['email', 'last_name', 'first_name', 'middle_name']
 
-    password = ReadOnlyPasswordHashField()
+        widgets = {
+            "email": forms.EmailInput(attrs={
+                "class": "form-control",
+                "placeholder": "Эл. Почта",
+            }),
+            "last_name": forms.TextInput(attrs={
+                "class": "form-control",
+                "placeholder": "Фамилия",
+            }),
+            "first_name": forms.TextInput(attrs={
+                "class": "form-control",
+                "placeholder": "Имя",
+            }),
+            "middle_name": forms.TextInput(attrs={
+                "class": "form-control",
+                "placeholder": "Отчество",
+            }),
+        }
