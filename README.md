@@ -22,7 +22,10 @@
 - Docker ![Static Badge](https://img.shields.io/badge/Docker-3.8-blue?logo=docker)
 
 ## Инфраструктура приложения:
-<center><img src="readme_src/infra.jpg" width="100%"></center>
+<center><img src="sources/infra.jpg" width="100%"></center>
+
+## Документация приложения 
+В репозитории находится пользовательская документация по работе с приложением, которая находится <a href="sources/Polzovatelskoe_Rykovodstvo.pdf"><font size="+1"><b><i>тут</i></b></font></a>
 
 ## Инструкция по развертыванию 
 Перед работой требуется создать сам .env файл и внести изменения для продукта:
@@ -35,7 +38,7 @@
 > docker-compose -f docker-compose.dev.yml up
 
 Далее нужно применить миграции Django Framework
->docker exec -it django_web sh -c "python manage.py makemigrations"
+>docker exec -it django_web sh -c "python manage.py makemigrations"\
 >docker exec -it django_web sh -c "python manage.py migrate"
 
 Для развёртывания приложения требуется передать в параметр -f docker-compose-prod.yml. Prod версия содержит в себе сервисы Certbot и Nginx.
