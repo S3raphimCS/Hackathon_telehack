@@ -1,5 +1,4 @@
 from django.contrib import admin, messages
-from django.contrib.auth import get_user_model
 from django.http import HttpResponseRedirect
 from django.urls import path
 from rest_framework.decorators import api_view
@@ -24,10 +23,12 @@ class UserAdmin(admin.ModelAdmin):
         form = UserSignUpForm(data=self.POST)
         if form.is_valid():
             password = create_random_password(15)
-            get_user_model().objects.create(email=form["email"].value(), first_name=form["first_name"].value(),
-                                            last_name=form["last_name"].value(),
-                                            middle_name=form["middle_name"].value(),
-                                            password=password)
+            user = CustomUser(email=form["email"].value(),
+                              first_name=form["first_name"].value(),
+                              last_name=form["last_name"].value(),
+                              middle_name=form["middle_name"].value())
+            user.set_password(password)
+            user.save()
             return HttpResponseRedirect('../../../../admin/users/customuser',
                                         {"messages": messages.success(self,
                                                                       f"Пользователь успешно добавлен\n"

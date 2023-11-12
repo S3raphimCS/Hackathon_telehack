@@ -10,7 +10,6 @@ from rest_framework import generics, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from users.models import CustomUser
 
 from .models import ExcelFile, Measurements, Operator, Report
@@ -84,17 +83,17 @@ class ReportSearchView(generics.ListAPIView):
         qs = Q()
 
         sort = self.request.GET.get('sort').split(',')
-        fields = []
         if sort:
-            for i in range(int(len(sort) / 2)):
-                sort_parameter = i * 2
-                fields.append(sort[sort_parameter])
-                if sort[sort_parameter] == '-1':
-                    fields[i] = '-' + fields[i]
+            params = sort[::2]
+            sort_params = [item for item in sort if item not in params]
+            for i in range(len(params)):
+                if sort_params[i] == '-1':
+                    params[i] = '-' + params[i]
+
         for el in queries:
             qs = qs | el
 
-        return Report.objects.filter(qs).order_by(*fields)
+        return Report.objects.filter(qs).order_by(*params)
 
 
 def create_report(filename: str, user: CustomUser) -> Response:  # request

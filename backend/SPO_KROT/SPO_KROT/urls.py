@@ -21,6 +21,7 @@ from django.urls import include, path
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
+from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.views import (TokenObtainPairView,
                                             TokenRefreshView)
 
@@ -39,7 +40,7 @@ urlpatterns = [
     path('api/v1/swagger/', schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
     path('api/v1/users/', include('users.urls'), name='users'),
     path('api/v1/metrics/', include('metrics.urls'), name='metrics'),
-    path('api/v1/auth/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/v1/auth/login/', TokenObtainPairView.as_view(permission_classes=[AllowAny]), name='token_obtain_pair'),
     path('api/v1/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
 

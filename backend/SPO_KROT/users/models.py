@@ -45,15 +45,14 @@ class CustomUser(AbstractUser):
         max_length=150,
         blank=True
     )
-    # TODO Потом это должно быть ForeignKey (Либо можно сделать сразу)
     department = models.CharField(
         _("Название отдела"),
-        blank=False, null=True,  # Возможно нужен будет null=False
+        blank=True, null=True,
         max_length=120,
     )
     employee_code = models.CharField(
         _("Код сотрудника"),
-        blank=False, null=True,  # Возможно нужен будет null=False
+        blank=True, null=True,
         unique=True,
         max_length=10,
     )
