@@ -83,7 +83,7 @@ export default function Home() {
           </Table>
         </TableContainer>
       </main>
-      <AddReportForm open={open} handleClose={handleClose} />
+      <AddReportForm open={open} handleClose={handleClose} page={page}/>
     </>
   );
 }

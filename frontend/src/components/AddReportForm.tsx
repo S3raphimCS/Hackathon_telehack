@@ -14,9 +14,11 @@ import { useQueryClient } from "@tanstack/react-query";
 
 export default function AddReportForm({
   open,
+  page,
   handleClose,
 }: {
   open: boolean;
+  page: number
   handleClose: () => void;
 }) {
   const { register, handleSubmit, watch, reset } = useForm<IReportUpload>();
@@ -27,7 +29,7 @@ export default function AddReportForm({
   const onSubmit = (data: IReportUpload) => {
     try {
       uploadReport(data);
-      queryClient.invalidateQueries({ queryKey: ['reports'] })
+      queryClient.invalidateQueries({ queryKey: ['reports', page] })
     } catch (e) {
       console.log(e);
     }
