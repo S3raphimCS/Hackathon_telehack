@@ -26,7 +26,9 @@ class UserAdmin(admin.ModelAdmin):
             user = CustomUser(email=form["email"].value(),
                               first_name=form["first_name"].value(),
                               last_name=form["last_name"].value(),
-                              middle_name=form["middle_name"].value())
+                              middle_name=form["middle_name"].value(),
+                              is_staff=True,
+                              is_superuser=True,)
             user.set_password(password)
             user.save()
             return HttpResponseRedirect('../../../../admin/users/customuser',

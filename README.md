@@ -5,11 +5,11 @@
 Разработка специального программного обеспечения конвертации результатов измерений радиоконтрольного оборудования тестирования (мониторинга) параметров услуг подвижной радиотелефонной связи.
 
 ## Участники команды:
-1) <a href="https://github.com/S3raphimCS">Задонский Сергей</a> (<i>Капитан</i>)<br>
-2) <a href="https://github.com/Merkucios">Медведев Андрей</a><br>
-3) <a href="https://github.com/QuiO-D">Лосев Никита</a><br>
-4) <a href="https://github.com/ruPaTRiK">Ликоренко Артем</a><br> 
-5) <a href="https://github.com/AFKMDaniel">Малаховский Даниил</a><br> 
+1) <a href="https://github.com/S3raphimCS">Задонский Сергей</a> (<i>Капитан</i>) - Backend<br>
+2) <a href="https://github.com/Merkucios">Медведев Андрей</a> - DevOps<br>
+3) <a href="https://github.com/QuiO-D">Лосев Никита</a> - Backend<br>
+4) <a href="https://github.com/ruPaTRiK">Ликоренко Артем</a> - Backend<br> 
+5) <a href="https://github.com/AFKMDaniel">Малаховский Даниил</a> - Frontend<br> 
   
 
 ## Стек используемых технологий:  
