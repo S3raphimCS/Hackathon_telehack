@@ -77,21 +77,23 @@ class ReportSearchView(generics.ListAPIView):
 
     def get_queryset(self, *args, **kwargs):
         query = self.request.GET.get('query')
-        fields = [f for f in Report._meta.fields if isinstance(f, CharField) or isinstance(f, DateField)]
-        queries = [Q(**{f.name + "__icontains": query}) for f in fields]
+        queries = []
+        if query:
+            fields = [f for f in Report._meta.fields if isinstance(f, CharField) or isinstance(f, DateField)]
+            queries = [Q(**{f.name + "__icontains": query}) for f in fields]
         qs = Q()
 
         sort = self.request.GET.get('sort').split(',')
         fields = []
         if sort:
             for i in range(int(len(sort) / 2)):
-                fields.append(sort[i * 2 - 1])
                 sort_parameter = i * 2
-                if sort[sort_parameter - 1] == '-1':
+                fields.append(sort[sort_parameter])
+                if sort[sort_parameter] == '-1':
                     fields[i] = '-' + fields[i]
-
         for el in queries:
             qs = qs | el
+
         return Report.objects.filter(qs).order_by(*fields)
 
 
