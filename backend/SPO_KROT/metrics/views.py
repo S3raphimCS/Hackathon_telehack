@@ -1,8 +1,7 @@
-import json
 from re import split as resplit
 
 from datefinder import find_dates
-from django.db.models import CharField, DateField, Q, QuerySet
+from django.db.models import CharField, DateField, Q
 from django.utils.translation import gettext_lazy as _
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -83,11 +82,8 @@ class ReportSearchView(generics.ListAPIView):
         qs = Q()
 
         sort = self.request.GET.get('sort').split(',')
-        print(sort)
         fields = []
         if sort:
-            print("Создает сортировка")
-            # fields = ["region", "city", "start_date", "end_date"]
             for i in range(int(len(sort) / 2)):
                 fields.append(sort[i * 2 - 1])
                 sort_parameter = i * 2
@@ -96,16 +92,7 @@ class ReportSearchView(generics.ListAPIView):
 
         for el in queries:
             qs = qs | el
-        print(fields)
         return Report.objects.filter(qs).order_by(*fields)
-
-
-class ReportSortedView(generics.ListAPIView):
-    serializer_class = ReportListSerializer
-
-    def get_queryset(self):
-        query = self.request.GET.get("sort")
-
 
 
 def create_report(filename: str, user: CustomUser) -> Response:  # request
@@ -243,13 +230,10 @@ class ExcelUploadView(APIView):
 @api_view(["PUT"])
 def update_report_metrics(request, pk):
     """Изменяет все метрики одного отчета"""
-    print(print(request.data))
     data = request.data
-    print('1')
     for el in data["measurements_set"]:
         metric = el
         metric_id = metric["id"]
-        print('2')
         voice_service_non_accessibility = metric["voice_service_non_accessibility"]
         voice_service_cut_off = metric["voice_service_cut_off"]
         speech_quality_on_call = metric["speech_quality_on_call"]
