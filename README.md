@@ -22,7 +22,7 @@
 - Docker ![Static Badge](https://img.shields.io/badge/Docker-3.8-blue?logo=docker)
 
 ## Инфраструктура приложения:
-<center><img src="readme_src/infra.jpg" width="95%"></center>
+<center><img src="readme_src/infra.jpg" width="100%"></center>
 
 ## Инструкция по развертыванию 
 Перед работой требуется создать сам .env файл и внести изменения для продукта:
