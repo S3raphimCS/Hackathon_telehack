@@ -19,12 +19,14 @@ import { Report, MeasurementKeys } from "@/types/reports";
 import { useUser } from "@/hooks/useUser";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { editReport, getReport } from "@/services/reports";
+import { useMask } from "@react-input/mask";
+import { toast } from "react-toastify";
 
 const schema = z.object({
   region: z.string(),
   city: z.string(),
-  start_date: z.string(),
-  end_date: z.string(),
+  start_date: z.date(),
+  end_date: z.date(),
   measurements_set: z.array(
     z.object({
       id: z.number(),
@@ -55,13 +57,10 @@ export default function ReportPage({ params }: { params: { id: number } }) {
     register,
     control,
     handleSubmit,
-    getValues,
     reset,
     formState: { errors },
   } = useForm<Report>({
     resolver: zodResolver(schema),
-    mode: "onBlur",
-    shouldFocusError: false,
   });
 
   const { fields } = useFieldArray({
@@ -72,6 +71,7 @@ export default function ReportPage({ params }: { params: { id: number } }) {
   const { data, isLoading } = useQuery({
     queryKey: ["report", params.id],
     queryFn: () => getReport(params.id),
+    refetchOnWindowFocus: false,
   });
 
   const queryClient = useQueryClient();
@@ -79,7 +79,11 @@ export default function ReportPage({ params }: { params: { id: number } }) {
     mutationFn: (data: Report) => editReport(params.id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["reports"] });
-      queryClient.invalidateQueries({ queryKey: ["report", params.id] });
+      // queryClient.invalidateQueries({ queryKey: ["report", params.id] });
+      toast.success('Успешно');
+    },
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
 
@@ -199,40 +203,68 @@ export default function ReportPage({ params }: { params: { id: number } }) {
     rows.push(<TableRow key={`measurements_set.${prop}`}>{cols}</TableRow>);
   }
 
+  const inputRef1 = useMask({
+    mask: "гггг-мм-дд",
+    replacement: { г: /\d/, м: /\d/, д: /\d/ },
+    showMask: true,
+    separate: true,
+  });
+  const inputRef2 = useMask({
+    mask: "гггг-мм-дд",
+    replacement: { г: /\d/, м: /\d/, д: /\d/ },
+    showMask: true,
+    separate: true,
+  });
+
   return (
     <Box sx={{ p: 1 }}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <TextField
-          label="Федеральный округ (ФО)"
-          sx={{ m: 1, width: "250px" }}
-          {...register("region")}
-          InputLabelProps={{ shrink: true }}
-        />
-        <TextField
-          label="Место проведения контроля"
-          sx={{ m: 1, width: "400px" }}
-          {...register("city")}
-          InputLabelProps={{ shrink: true }}
-        />
-        <Button type="submit" variant="contained">
-          Сохранить
-        </Button>
-        <br />
+        <Box sx={{ p: 1 }}>
+          <TextField
+            label="Федеральный округ (ФО)"
+            sx={{ width: "250px", mr: 2 }}
+            size="small"
+            {...register("region")}
+            InputLabelProps={{ shrink: true }}
+          />
+          <TextField
+            label="Место проведения контроля"
+            sx={{ width: "400px" }}
+            size="small"
+            {...register("city")}
+            InputLabelProps={{ shrink: true }}
+          />
+        </Box>
+
         <Typography sx={{ m: 1, color: "gray" }} variant="body1">
           Период проведения контроля
         </Typography>
-        <TextField
-          label="C"
-          sx={{ m: 1 }}
-          {...register("start_date")}
-          InputLabelProps={{ shrink: true }}
-        />
-        <TextField
-          label="По"
-          sx={{ m: 1 }}
-          {...register("end_date")}
-          InputLabelProps={{ shrink: true }}
-        />
+        <Box sx={{ display: "flex", justifyContent: "space-between", p: 1 }}>
+          <Box>
+            <TextField
+              label="C"
+              sx={{ mr: 2 }}
+              size="small"
+              {...register("start_date", { valueAsDate: true })}
+              InputLabelProps={{ shrink: true }}
+              inputRef={inputRef1}
+              error={!!errors.start_date}
+            />
+            <TextField
+              label="По"
+              size="small"
+              {...register("end_date", { valueAsDate: true })}
+              InputLabelProps={{ shrink: true }}
+              inputRef={inputRef2}
+              error={!!errors.end_date}
+            />
+          </Box>
+          <Box>
+            <Button type="submit" variant="contained">
+              Сохранить
+            </Button>
+          </Box>
+        </Box>
         <TableContainer component={Paper} sx={{ m: 1 }}>
           <Table>
             <TableHead>

@@ -11,24 +11,28 @@ import { useForm } from "react-hook-form";
 import { uploadReport } from "@/services/reports";
 import { IReportUpload } from "@/types/reports";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 export default function AddReportForm({
   open,
-  page,
   handleClose,
 }: {
   open: boolean;
-  page: number
   handleClose: () => void;
 }) {
   const { register, handleSubmit, watch, reset } = useForm<IReportUpload>();
   const files = watch("files");
 
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   const { mutate } = useMutation({
     mutationFn: (data: IReportUpload) => uploadReport(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['reports', page] });
+      queryClient.invalidateQueries({ queryKey: ["reports"] });
+      toast.success('Успешно');
+      handleCloseWithReset();
+    },
+    onError: (error) => {
+      toast.error(error.message);
       handleCloseWithReset();
     },
   });

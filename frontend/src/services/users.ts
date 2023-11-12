@@ -1,11 +1,12 @@
-'use client'
+"use client";
 
 import { ITokens, IUser, IUserSignIn } from "@/types/users";
+import { IError } from "@/types/errors";
 
 export async function signIn({
   email,
   password,
-}: IUserSignIn): Promise<ITokens> {
+}: IUserSignIn): Promise<ITokens | Error> {
   const formData = new FormData();
   formData.append("email", email);
   formData.append("password", password);
@@ -14,9 +15,15 @@ export async function signIn({
     method: "POST",
     body: formData,
   });
-  if (!response.ok) throw new Error("Failed on sign in request");
 
-  return await response.json();
+  const data = await response.json();
+
+  if (!response.ok) {
+    const error = data as IError;
+    throw new Error(error.detail);
+  }
+
+  return data;
 }
 
 export async function getUser(): Promise<IUser | null> {
@@ -27,7 +34,7 @@ export async function getUser(): Promise<IUser | null> {
   });
   if (!response.ok) throw new Error("Failed on get user request");
 
-  return await response.json();
+  return response.json();
 }
 
 export function saveTokens(tokens: ITokens): void {
