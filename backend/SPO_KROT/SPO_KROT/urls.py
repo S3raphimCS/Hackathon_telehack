@@ -31,7 +31,7 @@ schema_view = get_schema_view(
         description="API сервиса СПО РКОТ",
     ),
     public=True,
-    permission_classes=[permissions.AllowAny],
+    permission_classes=[permissions.IsAdminUser],
 )
 
 urlpatterns = [
