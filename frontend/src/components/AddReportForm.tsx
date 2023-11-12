@@ -10,7 +10,7 @@ import Typography from "@mui/material/Typography";
 import { useForm } from "react-hook-form";
 import { uploadReport } from "@/services/reports";
 import { IReportUpload } from "@/types/reports";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function AddReportForm({
   open,
@@ -25,14 +25,16 @@ export default function AddReportForm({
   const files = watch("files");
 
   const queryClient = useQueryClient()
+  const { mutate } = useMutation({
+    mutationFn: (data: IReportUpload) => uploadReport(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['reports', page] });
+      handleCloseWithReset();
+    },
+  });
 
   const onSubmit = (data: IReportUpload) => {
-    try {
-      uploadReport(data);
-      queryClient.invalidateQueries({ queryKey: ['reports', page] })
-    } catch (e) {
-      console.log(e);
-    }
+    mutate(data);
   };
 
   const handleCloseWithReset = () => {
