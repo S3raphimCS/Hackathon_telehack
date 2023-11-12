@@ -25,11 +25,14 @@ interface Measurement {
   export interface MeasurementKeys extends Omit<Measurement, "id"> {}
   
   export interface Report {
-    region: string;
-    place: string;
-    from: string;
-    to: string;
-    measurements: Measurement[];
+    publisher: string,
+    title: string,
+    region: string,
+    city: string,
+    start_date: string,
+    end_date: string,
+    published: string,
+    measurements_set: Measurement[];
   }
 
   export interface IReportUpload {

@@ -64,7 +64,7 @@ export default function Home() {
             </TableHead>
             <TableBody>
               {data?.results.map((report) => (
-                <TableRow>
+                <TableRow key={report.id}>
                   <TableCell scope="row" align="center">
                     {report.region}
                   </TableCell>

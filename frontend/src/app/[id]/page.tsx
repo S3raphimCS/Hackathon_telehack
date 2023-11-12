@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import React, { useEffect } from "react";
+import { useForm, useFieldArray, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import TextField from "@mui/material/TextField";
@@ -17,16 +17,18 @@ import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import { Report, MeasurementKeys } from "@/types/reports";
 import { useUser } from "@/hooks/useUser";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { editReport, getReport } from "@/services/reports";
 
 const schema = z.object({
   region: z.string(),
-  place: z.string(),
-  from: z.string(),
-  to: z.string(),
-  measurements: z.array(
+  city: z.string(),
+  start_date: z.string(),
+  end_date: z.string(),
+  measurements_set: z.array(
     z.object({
       id: z.number(),
-      voice_service_non_accessibility: z.number().max(5),
+      voice_service_non_accessibility: z.number(),
       voice_service_cut_off: z.number(),
       speech_quality_on_call: z.number(),
       negative_mos_samples_ratio: z.number(),
@@ -34,7 +36,7 @@ const schema = z.object({
       avg_sms_delivery_time: z.number(),
       http_failure_session: z.number(),
       http_ul_mean_userdata_rate: z.number(),
-      http_dl_mean_userdata_rate: z.number().min(80),
+      http_dl_mean_userdata_rate: z.number(),
       http_session_time: z.number(),
       number_of_test_voice_connections: z.number(),
       number_of_voice_sequences: z.number(),
@@ -46,7 +48,7 @@ const schema = z.object({
   ),
 });
 
-export default function ReportPage() {
+export default function ReportPage({ params }: { params: { id: number } }) {
   useUser();
 
   const {
@@ -54,78 +56,48 @@ export default function ReportPage() {
     control,
     handleSubmit,
     getValues,
+    reset,
     formState: { errors },
   } = useForm<Report>({
     resolver: zodResolver(schema),
     mode: "onBlur",
     shouldFocusError: false,
-    defaultValues: {
-      region: "УФО",
-      place: "г. Екатеринбург",
-      from: "01.01.2023",
-      to: "01.03.2023",
-      measurements: [
-        {
-          id: 1,
-          operator: {
-            id: 1,
-            name: "Beeline",
-          },
-          voice_service_non_accessibility: 0.5,
-          voice_service_cut_off: 0.2,
-          speech_quality_on_call: 4.3,
-          negative_mos_samples_ratio: 0.3,
-          undelivered_messages: 4.3,
-          avg_sms_delivery_time: 1,
-          http_failure_session: 24.5,
-          http_ul_mean_userdata_rate: 2466.8,
-          http_dl_mean_userdata_rate: 1,
-          http_session_time: 1,
-          number_of_test_voice_connections: 1,
-          number_of_voice_sequences: 1,
-          voice_connections_with_low_intelligibility: 1,
-          number_of_sms_messages: 1,
-          number_of_connections_attempts_http: 1,
-          number_of_test_sessions_http: 1,
-        },
-        {
-          id: 2,
-          operator: {
-            id: 2,
-            name: "MTS",
-          },
-          voice_service_non_accessibility: 0.5,
-          voice_service_cut_off: 0.2,
-          speech_quality_on_call: 4.3,
-          negative_mos_samples_ratio: 0.3,
-          undelivered_messages: 4.3,
-          avg_sms_delivery_time: 1,
-          http_failure_session: 24.5,
-          http_ul_mean_userdata_rate: 2466.8,
-          http_dl_mean_userdata_rate: 1,
-          http_session_time: 1,
-          number_of_test_voice_connections: 1,
-          number_of_voice_sequences: 1,
-          voice_connections_with_low_intelligibility: 1,
-          number_of_sms_messages: 1,
-          number_of_connections_attempts_http: 1,
-          number_of_test_sessions_http: 1,
-        },
-      ],
-    },
   });
 
   const { fields } = useFieldArray({
     control,
-    name: "measurements",
+    name: "measurements_set",
   });
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["report", params.id],
+    queryFn: () => getReport(params.id),
+  });
+
+  const queryClient = useQueryClient();
+  const { mutate } = useMutation({
+    mutationFn: (data: Report) => editReport(params.id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["reports"] });
+      queryClient.invalidateQueries({ queryKey: ["report", params.id] });
+    },
+  });
+
+  const onSubmit: SubmitHandler<Report> = (data) => {
+    console.log(data);
+    mutate(data);
+  };
+
+  useEffect(() => {
+    reset(data);
+  }, [data]);
 
   const headers = [];
   for (let i = 0; i < fields.length; i++) {
     headers.push(
-      <TableCell key={i}>
+      <TableCell key={`measurements_set.${i}.header`}>
         Значение
-        <input type="hidden" {...register(`measurements.${i}.id`)} />
+        <input type="hidden" {...register(`measurements_set.${i}.id`)} />
       </TableCell>
     );
   }
@@ -175,74 +147,92 @@ export default function ReportPage() {
     ],
   };
 
-  const rows = [];
-  const errorArr = [];
+  const operatorCols = [
+    <TableCell key="measurements_set.operator.name">
+      {stringConsts.operator[0]}
+    </TableCell>,
+    <TableCell key="measurements_set.operator.constraints">
+      {stringConsts.operator[1]}
+    </TableCell>,
+  ];
+  for (let i = 0; i < fields.length; i++) {
+    operatorCols.push(
+      <TableCell key={`measurements_set.${i}.operator`}>
+        {fields[i].operator.name}
+      </TableCell>
+    );
+  }
+
+  const rows = [
+    <TableRow key="measurements_set.operator">{operatorCols}</TableRow>,
+  ];
+
   for (let prop in fields[0]) {
-    if (prop === "id") continue;
+    if (prop === "id" || prop === "report" || prop === "operator") continue;
     const cols = [
-      <TableCell key={`measurements.${prop}.name`}>
+      <TableCell key={`measurements_set.${prop}.name`}>
         {stringConsts[prop as keyof MeasurementKeys][0]}
       </TableCell>,
-      <TableCell key={`measurements.${prop}.constraints`}>
+      <TableCell key={`measurements_set.${prop}.constraints`}>
         {stringConsts[prop as keyof MeasurementKeys][1]}
       </TableCell>,
     ];
     for (let i = 0; i < fields.length; i++) {
       cols.push(
         <TableCell key={fields[i].id}>
-          {prop !== "operator" ? (
-            <TextField
-              size="small"
-              defaultValue={fields[i][prop as keyof MeasurementKeys]}
-              error={
-                !!errors.measurements?.[i]?.[
-                  prop as keyof (typeof errors.measurements)[0]
-                ]
-              }
-              {...register(
-                `measurements.${i}.${prop as keyof MeasurementKeys}`,
-                { valueAsNumber: true }
-              )}
-            />
-          ) : (
-            fields[i].operator.name
-          )}
+          <TextField
+            size="small"
+            error={
+              !!errors.measurements_set?.[i]?.[
+                prop as keyof (typeof errors.measurements_set)[0]
+              ]
+            }
+            InputLabelProps={{ shrink: true }}
+            {...register(
+              `measurements_set.${i}.${prop as keyof MeasurementKeys}`,
+              { valueAsNumber: true }
+            )}
+          />
         </TableCell>
       );
     }
-    rows.push(<TableRow key={`measurements.${prop}`}>{cols}</TableRow>);
+    rows.push(<TableRow key={`measurements_set.${prop}`}>{cols}</TableRow>);
   }
-
-  const onSubmit = () => {
-    console.log(getValues());
-  };
-
-  React.useEffect(() => {
-    handleSubmit(() => {})();
-  },[]);
 
   return (
     <Box sx={{ p: 1 }}>
-      <form  onSubmit={handleSubmit(() => {})}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <TextField
           label="Федеральный округ (ФО)"
           sx={{ m: 1, width: "250px" }}
           {...register("region")}
+          InputLabelProps={{ shrink: true }}
         />
         <TextField
           label="Место проведения контроля"
           sx={{ m: 1, width: "400px" }}
-          {...register("place")}
+          {...register("city")}
+          InputLabelProps={{ shrink: true }}
         />
-        <Button type="submit" variant="contained" onClick={onSubmit}>
+        <Button type="submit" variant="contained">
           Сохранить
         </Button>
         <br />
         <Typography sx={{ m: 1, color: "gray" }} variant="body1">
           Период проведения контроля
         </Typography>
-        <TextField label="C" sx={{ m: 1 }} {...register("from")} />
-        <TextField label="По" sx={{ m: 1 }} {...register("to")} />
+        <TextField
+          label="C"
+          sx={{ m: 1 }}
+          {...register("start_date")}
+          InputLabelProps={{ shrink: true }}
+        />
+        <TextField
+          label="По"
+          sx={{ m: 1 }}
+          {...register("end_date")}
+          InputLabelProps={{ shrink: true }}
+        />
         <TableContainer component={Paper} sx={{ m: 1 }}>
           <Table>
             <TableHead>
